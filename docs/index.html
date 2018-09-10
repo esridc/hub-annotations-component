@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+  <title>Hub Annotations Component</title>
+  <script src='https://unpkg.com/hub-annotations-component@0.0.1/dist/annotationscomponent.js'></script>
+  <style>
+    annotations-component {
+      width: 400px;
+      max-height: 600px;
+      overflow-y: auto;
+      float: left;
+      margin: 0 0 50px 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Hub Annotations</h2>
+  <p>
+    <em>Demonstration of building Hub web components.</em>
+  </p>
+
+
+  <annotations-component
+      org="BBpPn9wZu2D6eTNY" >
+    <template id="annotation-header">
+      <strong>Recent</strong>
+    </template>
+  </annotations-component>
+
+  <annotations-component
+      org="BBpPn9wZu2D6eTNY"
+      target="http://opendata.dc.gov/datasets/urban-forestry-street-trees">
+    <template id="annotation-header">
+      <strong>Trees</strong>
+    </template>
+  </annotations-component>
+
+  <annotations-component
+      org="BBpPn9wZu2D6eTNY"
+      target="http://opendata.dc.gov/datasets/urban-forestry-street-trees/25922378">
+    <template id="annotation-header">
+      <strong>My Tree</strong>
+    </template>
+  </annotations-component>
+
+  <div style="clear:both"></div>
+
+<h2>Chat Demo</h2>
+  <annotations-component
+      org="BBpPn9wZu2D6eTNY"
+      search="author='twaysonX' OR author='aturner'">
+    <template id="annotation-header">
+      <strong>Chat</strong>
+    </template>
+  </annotations-component>
+
+  <annotations-component
+      org="BBpPn9wZu2D6eTNY"
+      author="aturner">
+    <template id="annotation-header">
+      <strong>Andrew</strong>
+    </template>
+  </annotations-component>
+  <annotations-component
+      org="BBpPn9wZu2D6eTNY"
+      author="twaysonX">
+    <template id="annotation-header">
+      <strong>Tom</strong>
+    </template>
+  </annotations-component>
+
+</body>
+</html>
