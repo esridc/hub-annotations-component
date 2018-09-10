@@ -1,0 +1,50 @@
+{
+  "name": "hub-annotations-component",
+  "version": "0.0.1",
+  "description": "Hub Annotations web component",
+  "module": "dist/esm/index.js",
+  "main": "dist/index.js",
+  "types": "dist/types/components.d.ts",
+  "collection": "dist/collection/collection-manifest.json",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "stencil build",
+    "start": "stencil build --dev --watch --serve",
+    "test": "jest",
+    "test.watch": "jest --watch"
+  },
+  "dependencies": {
+    "@esri/hub-annotations": "^1.1.1",
+    "@esri/hub-initiatives": "^1.1.1"
+  },
+  "devDependencies": {
+    "@stencil/core": "^0.11.0",
+    "@types/jest": "^23.3.1",
+    "jest": "^23.4.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/esridc/hub-annotations-component.git"
+  },
+  "author": "Andrew Turner <aturner@esri.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/esridc/hub-annotations-component"
+  },
+  "homepage": "https://github.com/esridc/hub-annotations-component",
+  "jest": {
+    "transform": {
+      "^.+\\.(ts|tsx)$": "<rootDir>/node_modules/@stencil/core/testing/jest.preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(tsx?|jsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json",
+      "jsx"
+    ]
+  }
+}
