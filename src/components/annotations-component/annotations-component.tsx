@@ -1,6 +1,6 @@
-import { Component, Prop, Element, State } from '@stencil/core';
+import { Component, Prop, Element, State, Listen, Event, EventEmitter} from '@stencil/core';
 
-import { getAnnotationServiceUrl, searchAnnotations, addAnnotations } from '@esri/hub-annotations';
+import { getAnnotationServiceUrl, searchAnnotations, addAnnotations, deleteAnnotations } from '@esri/hub-annotations';
 export interface IResourceObject {
   id: string;
   type: "annotations" | "users";
@@ -31,22 +31,31 @@ export class AnnotationsComponent {
   @Prop() search: string;
   @Prop({ mutable: true }) portalUrl: string;
   @Prop({ mutable: true }) annotationsUrl: string;
+  @Prop() update: boolean; // Automatic updates
   @State() annotations: IResourceObject[]
   @State() authors: any;
   @State() annotationDescription: string;
   @State() searchOptions: any;
 
+  // Component Events
+  @Event() eventAddAnnotation: EventEmitter;
+
+  @Listen('add-annotation')
+  handleEvent(e) {
+    console.log('Event: add-annotation', e);
+    this.addAnnotation(e.details.annotation);
+  }
+
+  // Component Methods
   constructor() {
     this.portalUrl = 'https://www.arcgis.com';
     this.authors = {}
     this.searchOptions = {} //author: this.authorSearch};
 
-    setInterval(() => {
-      this.updateAnnotations(this.searchOptions)
-    }, 1000)
   }
 
   componentWillLoad() {
+
     if(this.search !== null || this.search !== undefined) {
       this.searchOptions.search = this.search;
     }
@@ -63,6 +72,11 @@ export class AnnotationsComponent {
       this.searchOptions.target = this.target;
     }
 
+    if(this.update) {
+      setInterval(() => {
+        this.updateAnnotations(this.searchOptions)
+      }, 1000)
+    }
     return getAnnotationServiceUrl(this.org).then( annotationsUrl => {
       this.annotationsUrl = annotationsUrl + '/0';
       return this.updateAnnotations(this.searchOptions);
@@ -72,7 +86,7 @@ export class AnnotationsComponent {
   // Retrieve annotations from service and create combined list
   updateAnnotations(options) {
     return this.getAnnotations(options).then(response => {
-      console.log("Annotations", response)
+      // console.log("Annotations", response)
       this.annotations = response.data;
 
       // Append the authors index
@@ -84,8 +98,20 @@ export class AnnotationsComponent {
     })
   }
 
+  deleteAnnotation(annotationId) {
+    console.log("deleteAnnotations", annotationId);
+    deleteAnnotations({url: this.annotationsUrl, deletes: [ annotationId ] })
+    .then( response => {
+        console.log("deleteAnnotations", response);
+        return this.updateAnnotations(this.searchOptions);
+    });
+  }
   getAnnotations(search) {
     let query = [];
+    if(search === undefined || search === null) {
+      search = {}
+    }
+
     if(search.author) {
       query.push(`author LIKE '${search.author}'`)
     }
@@ -95,7 +121,7 @@ export class AnnotationsComponent {
     if(search.search) {
       query.push(search.search)
     }
-    console.log("Search", search)
+    // console.log("Search", search)
     return searchAnnotations({url: this.annotationsUrl, params: {where: query.join(" AND ")}})
   }
 
@@ -115,14 +141,28 @@ export class AnnotationsComponent {
     return null;
   }
 
-  addAnnotation(event) {
+  addEvent(event) {
     event.preventDefault();
+    this.addAnnotation({ attributes: {
+                      author: this.author,
+                      source: window.location.href,
+                      target: this.target,
+                      description: this.textInput.value
+                    }});
+  }
+
+  addAnnotation(newAnnotation) {
     return addAnnotations({url: this.annotationsUrl, adds: [
-        {attributes: {author: this.author, source: window.location.href, target: this.target, description: this.textInput.value}}
-      ]}).then( response => {
+        newAnnotation
+      ]}).then( (/*response*/) => {
         this.updateAnnotations(this.searchOptions);
-        console.log("addAnnotations", response)
+        this.eventAddAnnotation.emit(newAnnotation);
+        // console.log("addAnnotations", response)
     });
+  }
+
+  removeAnnotation(event) {
+    console.log("removeAnnotation", [event.target.id, event])
   }
 
   authorName(username) {
@@ -168,12 +208,14 @@ export class AnnotationsComponent {
     output.push(
       <div class="inbox_people">
         {this.annotations.map((annotation) =>
-          <div class="chat_list">
+          <div class="chat_list" id={"annotation-" + annotation.attributes.OBJECTID}>
               <div class="chat_people">
                 <div class="chat_img"> <img src={this.authorImage(annotation.attributes.author)} alt="profile"/> </div>
                 <div class="chat_ib">
-                  <h5>{this.authorName(annotation.attributes.author)} <span class="chat_date">{formatDate(annotation.attributes.created_at)}</span></h5>
                   <p>{annotation.attributes.description}</p>
+                  <h5>{this.authorName(annotation.attributes.author)}
+                    <span class="chat_date" onClick={() => this.deleteAnnotation(annotation.attributes.OBJECTID)}>{formatDate(annotation.attributes.created_at)}</span>
+                  </h5>
                 </div>
               </div>
             </div>

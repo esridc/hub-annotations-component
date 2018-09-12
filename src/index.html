@@ -14,25 +14,45 @@
       margin: 0 0 50px 50px;
     }
   </style>
+  <script>
+    document.addEventListener('eventAddAnnotation', function componentEvent(e) {
+      console.log('Component Event Recieved', e);
+      // document.getElementsByTagName('side-menu')[0].style.display =   'none';
+    });
+    function sendEvent(elId, author, target, description) {
+      var el = document.getElementById(elId);
+      var event = new Event('add-annotation');
+      event.details = {annotation: {attributes: {
+                        author: author,
+                        source: window.location.href,
+                        target: target,
+                        description: description}}};
+
+      el.dispatchEvent(event);
+    }
+  </script>
 </head>
 <body>
 
   <h2>Hub Annotations</h2>
   <p>
     <em>Demonstration of building Hub web components.</em>
+    <ul>
+      <li> <button onClick="sendEvent('component1', 'bwolfe', 'http://opendata.dc.gov/datasets/urban-forestry-street-trees/25922378', 'External Comment');">Send Annotation to 1</button> </li>
+    </ul>
   </p>
 
 
-  <annotations-component
-      org="BBpPn9wZu2D6eTNY" >
-    <template id="annotation-header">
-      <strong>Recent</strong>
-    </template>
-  </annotations-component>
-
-  <annotations-component
+  <!-- Simple Component -->
+  <annotations-component id="component1"
       org="BBpPn9wZu2D6eTNY"
-      target="http://opendata.dc.gov/datasets/urban-forestry-street-trees">
+      update="true">
+    </annotations-component>
+
+  <!-- Custom header template & target attribute -->
+  <annotations-component id="component2"
+      org="BBpPn9wZu2D6eTNY"
+      target="http://opendata.dc.gov/datasets/urban-forestry-street-trees%">
     <template id="annotation-header">
       <strong>Trees</strong>
     </template>
@@ -40,7 +60,8 @@
 
   <annotations-component
       org="BBpPn9wZu2D6eTNY"
-      target="http://opendata.dc.gov/datasets/urban-forestry-street-trees/25922378">
+      target="http://opendata.dc.gov/datasets/urban-forestry-street-trees/25922378"
+      update="true">
     <template id="annotation-header">
       <strong>My Tree</strong>
     </template>
@@ -51,7 +72,8 @@
 <h2>Chat Demo</h2>
   <annotations-component
       org="BBpPn9wZu2D6eTNY"
-      search="author='twaysonX' OR author='aturner'">
+      search="author='twaysonX' OR author='aturner'"
+      update="true">
     <template id="annotation-header">
       <strong>Chat</strong>
     </template>
@@ -59,14 +81,16 @@
 
   <annotations-component
       org="BBpPn9wZu2D6eTNY"
-      author="aturner">
+      author="aturner"
+      update="true">
     <template id="annotation-header">
       <strong>Andrew</strong>
     </template>
   </annotations-component>
   <annotations-component
       org="BBpPn9wZu2D6eTNY"
-      author="twaysonX">
+      author="twaysonX"
+      update="true">
     <template id="annotation-header">
       <strong>Tom</strong>
     </template>

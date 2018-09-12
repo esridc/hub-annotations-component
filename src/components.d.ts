@@ -36,6 +36,7 @@ declare global {
       'portalUrl': string;
       'search': string;
       'target': string;
+      'update': boolean;
     }
   }
 
@@ -60,10 +61,12 @@ declare global {
     export interface AnnotationsComponentAttributes extends HTMLAttributes {
       'annotationsUrl'?: string;
       'author'?: string;
+      'onEventAddAnnotation'?: (event: CustomEvent) => void;
       'org'?: string;
       'portalUrl'?: string;
       'search'?: string;
       'target'?: string;
+      'update'?: boolean;
     }
   }
 }
